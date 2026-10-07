@@ -5,6 +5,14 @@ A character CNN and a two-layer bidirectional LSTM score the CCG category, head 
 Inference runs on the CPU with ONNX Runtime, and the model is about 16 MB in unquantized float32.
 Derivations are written as AUTO, JSON or Jigg XML.
 
+## Accuracy and model size
+
+![Labeled F1 and model size of English CCG parsers](assets/f1-vs-model-size.png)
+
+Labeled F1 of CCGbank predicate-argument dependencies (PARG) on section 23, against the total size of the model files each parser loads.
+Derivations were converted to dependencies with C&C's `generate` (C&C prints the same dependencies directly), and sentences without a parse count toward the gold dependencies.
+The other parsers are depccg 3.0.0 with its basic model (10 category candidates and at most 100,000 search steps), EasyCCG with its default settings, and C&C 1.00 with models 1.02.
+
 ## Installation
 
 Python 3.11 or later and a C++17 compiler are required; the search is compiled during installation.
