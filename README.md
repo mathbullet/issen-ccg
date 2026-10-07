@@ -68,3 +68,22 @@ The code is licensed under the MIT License.
 The Issen model is distributed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) for non-commercial use only.
 It was trained on CCGbank 1.1 (LDC2005T13), with word vectors initialized from GloVe 6B.
 Commercial use additionally requires a CCGbank license from the Linguistic Data Consortium.
+
+## Citation
+
+Author: [Hayate Funakura](https://github.com/mathbullet)
+
+If you use Issen in your research, please cite it as follows.
+
+```bibtex
+@misc{
+  hayate-funakura-2026-issen-ccg,
+  title = {{Issen: A Fast and Compact English CCG Parser}},
+  author = {Hayate Funakura},
+  year = {2026},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/mathbullet/issen-ccg}},
+  url = {https://github.com/mathbullet/issen-ccg},
+}
+```
