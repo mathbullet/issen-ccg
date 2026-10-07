@@ -1,9 +1,9 @@
 # Issen
 
-Issen is an English CCG parser trained independently on CCGbank.
+Issen is a fast and compact English CCG parser.
 A character CNN and a two-layer bidirectional LSTM score the CCG category, head and part of speech of every word, and an A* search implemented in C++ builds the derivation.
 Inference runs on the CPU with ONNX Runtime, and the model is about 16 MB in unquantized float32.
-Derivations are written as AUTO, JSON or Jigg XML, and the Jigg XML can be passed directly to ccg2lambda for semantic parsing.
+Derivations are written as AUTO, JSON or Jigg XML.
 
 ## Installation
 
