@@ -1,33 +1,32 @@
 # Issen
 
-Issenは、CCGBankから独立に学習した英語のCCGパーサです。
-文字CNNと2層の双方向LSTMで各語のCCGカテゴリ・係り先・品詞を推定し、C++で実装したA*探索で構文木を求めます。
-推論はCPU上のONNX Runtimeで行い、モデルは量子化していないfloat32で約16MBです。
-構文木はAUTO、JSON、Jigg XMLで出力でき、Jigg XMLはccg2lambdaの意味解析にそのまま渡せます。
+Issen is an English CCG parser trained independently on CCGbank.
+A character CNN and a two-layer bidirectional LSTM score the CCG category, head and part of speech of every word, and an A* search implemented in C++ builds the derivation.
+Inference runs on the CPU with ONNX Runtime, and the model is about 16 MB in unquantized float32.
+Derivations are written as AUTO, JSON or Jigg XML, and the Jigg XML can be passed directly to ccg2lambda for semantic parsing.
 
-## インストール
+## Installation
 
-Python 3.11以上と、C++17に対応したコンパイラが必要です。
-インストール時に探索器をビルドします。
+Python 3.11 or later and a C++17 compiler are required; the search is compiled during installation.
 
 ```sh
 uv add "issen-ccg[infer,morphology] @ git+https://github.com/mathbullet/issen-ccg" --tag v0.1.0
 ```
 
-`infer` はONNX Runtime、`morphology` はJigg出力のlemma生成に使うMorphoDiTaを導入します。
-AUTOとJSONだけを使う場合、`morphology` は不要です。
+`infer` installs ONNX Runtime, and `morphology` installs MorphoDiTa, which produces the lemmas in Jigg output.
+`morphology` is not needed if you only use AUTO and JSON.
 
-## モデル
+## Models
 
-モデルはパッケージに含まれていません。
-次の2つを入手し、実行時にパスを指定してください。
+The models are not included in the package.
+Download the following and pass their paths at run time.
 
-- Issenのモデル：[Releases](https://github.com/mathbullet/issen-ccg/releases) の `issen-ccg-model-v0.1.0.tar.gz` を展開したディレクトリです。`--model` に指定します。
-- MorphoDiTaの英語モデル：Jigg出力でのみ必要です。[配布ZIP](https://lindat.mff.cuni.cz/repository/server/api/core/bitstreams/46fe97c1-1ea9-4121-a46c-f1ed27c57a50/content) に含まれる `english-morphium-wsj-140407-no_negation.tagger` を `--morphodita-model` に指定します。このモデルはCC BY-NC-SA（非商用）で配布されています。詳細は [MorphoDiTaのマニュアル](https://ufal.mff.cuni.cz/morphodita/users-manual) を参照してください。
+- Issen model: extract `issen-ccg-model-v0.1.0.tar.gz` from [Releases](https://github.com/mathbullet/issen-ccg/releases) and pass the resulting directory to `--model`.
+- MorphoDiTa English model (Jigg output only): pass `english-morphium-wsj-140407-no_negation.tagger` from the [distribution ZIP](https://lindat.mff.cuni.cz/repository/server/api/core/bitstreams/46fe97c1-1ea9-4121-a46c-f1ed27c57a50/content) to `--morphodita-model`. This model is distributed under CC BY-NC-SA (non-commercial); see the [MorphoDiTa manual](https://ufal.mff.cuni.cz/morphodita/users-manual) for details.
 
-## CLI
+## Command line
 
-入力は1行1文で、トークンを空白で区切ります。
+The input has one sentence per line, with tokens separated by spaces.
 
 ```sh
 echo 'John likes Mary .' | uv run issen-ccg --model issenccg
@@ -36,11 +35,11 @@ echo 'The women are sketching houses .' | uv run issen-ccg \
   --morphodita-model english-morphium-wsj-140407-no_negation.tagger
 ```
 
-- `--format` は `auto`（既定）、`json`、`jigg` から選べます。`jigg` では `--morphodita-model` が必須です。
-- Jigg出力の各トークンには、入力トークンを `surf`、小文字のlemmaを `base`、Issenが予測した品詞を `pos` として書きます。
-- 1文は1〜512トークンです。513トークン以上の文は解析せず、`too_long` の失敗として結果に残します。空行は読み飛ばします。
-- 探索の上限は `--max-nodes`（既定300,000）と `--timeout-ms`（既定10,000）で変更できます。上限に達した文は、構文木を作らず `node_limit` または `timeout` の失敗として結果に残します。
-- 終了コードは、すべての文を解析できた場合に0、解析に失敗した文がある場合に3、引数の誤りやモデルを読み込めない場合に2です。失敗した文があっても、成功した文の結果は出力します。
+- `--format` is `auto` (default), `json` or `jigg`. `jigg` requires `--morphodita-model`.
+- In Jigg output, each token has the input token as `surf`, the lowercased lemma as `base`, and the part of speech predicted by Issen as `pos`.
+- A sentence has 1 to 512 tokens. Sentences of 513 tokens or more are not parsed and are reported as `too_long` failures. Blank lines are skipped.
+- `--max-nodes` (default 300,000) and `--timeout-ms` (default 10,000) limit the search. A sentence that reaches a limit gets no derivation and is reported as a `node_limit` or `timeout` failure.
+- The exit status is 0 when every sentence is parsed, 3 when some sentences fail, and 2 for invalid arguments or models that cannot be loaded. The results of the parsed sentences are written even when others fail.
 
 ## Python
 
@@ -60,12 +59,12 @@ lemmas = [lemmatizer.lemmatize(tokens) for tokens in sentences]
 xml = to_jigg(sentences, results, lemmas_by_sentence=lemmas)
 ```
 
-空の文を渡すと `ValueError` になります。
+An empty sentence raises `ValueError`.
 
-## ライセンス
+## License
 
-コードはMITライセンスです。
+The code is licensed under the MIT License.
 
-Issenのモデルは [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) で配布し、非商用の利用に限ります。
-モデルはCCGbank 1.1（LDC2005T13）で学習しており、単語ベクトルの初期値にGloVe 6Bを使っています。
-商用で利用する場合は、Linguistic Data ConsortiumとのCCGbankの契約が別途必要です。
+The Issen model is distributed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) for non-commercial use only.
+It was trained on CCGbank 1.1 (LDC2005T13), with word vectors initialized from GloVe 6B.
+Commercial use additionally requires a CCGbank license from the Linguistic Data Consortium.
