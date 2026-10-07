@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If you use Issen in your research, please cite it as below."
+type: software
+title: "Issen: A Fast and Compact English CCG Parser"
+authors:
+  - given-names: "Hayate"
+    family-names: "Funakura"
+    alias: "mathbullet"
+    website: "https://github.com/mathbullet"
+version: 0.1.0
+date-released: 2026-10-07
+url: "https://github.com/mathbullet/issen-ccg"
+repository-code: "https://github.com/mathbullet/issen-ccg"
+license: MIT
